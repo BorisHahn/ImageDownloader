@@ -3,6 +3,7 @@
 public class Program
 {
     static bool _isProgarammEnd = false;
+    static CancellationTokenSource cts = new CancellationTokenSource();
 
     static void Main()
     {
@@ -19,7 +20,7 @@ public class Program
         };
         foreach (var img in imagesStore.Images)
         {
-            downloadTasks.Add(downloadFile.Download(img.Key, img.Value));
+            downloadTasks.Add(downloadFile.Download(img.Key, img.Value, cts.Token));
         }
 
         Console.WriteLine("Нажмите клавишу A для выхода или любую другую клавишу для проверки статуса скачивания");
@@ -29,11 +30,9 @@ public class Program
             if (command == "A")
             {
                 _isProgarammEnd = true;
-                foreach (var task in downloadTasks)
-                {
-                    task.Dispose();
-                }
+                cts.Cancel();
             }
+                
             else
             {
                 foreach (var task in downloadTasks)
